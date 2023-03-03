@@ -16,9 +16,9 @@ struct  TIME time;				//DS1302时间结构体
 uchar state;					//接受数据包状态机
 uchar len;						//接收数据包长度
 uchar NetTimeBuffer[15];		//接收数据包缓存
-uchar valid;						//数据有效无效标志
+uchar valid;					//数据有效无效标志
 uchar light;
-
+uchar flag;						//收发标志
 
 struct systime					//定义网络时间结构体
 {
@@ -49,13 +49,12 @@ void main()
 	OLED_Init();
 	OLED_Clear();
 	TM1638_Init();
-	
 	TM1638_SetLight(0);
-//	TM1638_ShowTime(18,50,50);
 //	DS1302_WriteTimeSim(19,54,10);
-//	DS1302_WriteDate(23,2,24);
+//	DS1302_WriteDate(22,2,24);
 	while(1)
 	{
+		uchar temp=flag;
 		displayRTCTime();		//数码管显示时钟芯片时间
 		OLEDShowTemp();
 		
@@ -76,16 +75,18 @@ void main()
 		}
 
 		//ds1302时间与网络时间相差10秒则写入，避免频繁写入
-		if((valid==1)  && (time.sec<=netTime.sec-8 || time.sec>=(netTime.sec+12)))
+		if((valid==1)  && (time.sec<=netTime.sec-8 || time.sec>=(netTime.sec+12)) && (temp!=flag))
 		{
+			writeLED=~writeLED;
 			DS1302_WriteTimeSim(netTime.hour,netTime.min,netTime.sec+2);
-			//writeLED=~writeLED;
+			writeLED=~writeLED;
 		}
 		
-		if((valid==1)  && (time.year!=netTime.year))
+		if((valid==1)  && (time.year!=netTime.year)&& (temp!=flag) )
 		{
+			writeLED=~writeLED;
 			DS1302_WriteDate(netTime.year,netTime.mon,netTime.date);
-			//writeLED=~writeLED;
+			writeLED=~writeLED;
 		}
 	}
 }
@@ -189,7 +190,7 @@ void UART_IT() interrupt 4
 		buf=SBUF;
 		if(buf==0x40)
 		{
-			state=1;					//接收到包头,进状态1,记录14个时间数和0D
+			state=1;					//接收到包头'@',进状态1,记录14个时间数和0D
 			len=15;
 			recieveLED=0;
 		}
@@ -206,6 +207,8 @@ void UART_IT() interrupt 4
 			recieveLED=1;
 		}
 	}
+	flag++;
+	
 	RI=0;
 }
 
