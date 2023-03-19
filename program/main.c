@@ -76,6 +76,15 @@ void main()
 	while(1)
 	{
 		uchar temp=flag;
+		
+		netTime.hour=(NetTimeBuffer[9]-'0')*10+(NetTimeBuffer[10]-'0');
+		netTime.min=(NetTimeBuffer[11]-'0')*10+(NetTimeBuffer[12]-'0');
+		netTime.sec=(NetTimeBuffer[13]-'0')*10+(NetTimeBuffer[14]-'0');
+	
+		netTime.year=(NetTimeBuffer[3]-'0')*10+(NetTimeBuffer[4]-'0');
+		netTime.mon=(NetTimeBuffer[5]-'0')*10+(NetTimeBuffer[6]-'0');
+		netTime.date=(NetTimeBuffer[7]-'0')*10+(NetTimeBuffer[8]-'0');
+		
 		displayRTCTime();		//数码管显示时钟芯片时间
 		OLEDShowTemp();
 		if(receiveShowFlag)
@@ -130,14 +139,6 @@ void displayRTCDate()
 }
 void OLEDShowNetTime()
 {
-	netTime.hour=(NetTimeBuffer[9]-'0')*10+(NetTimeBuffer[10]-'0');
-	netTime.min=(NetTimeBuffer[11]-'0')*10+(NetTimeBuffer[12]-'0');
-	netTime.sec=(NetTimeBuffer[13]-'0')*10+(NetTimeBuffer[14]-'0');
-	
-	netTime.year=(NetTimeBuffer[3]-'0')*10+(NetTimeBuffer[4]-'0');
-	netTime.mon=(NetTimeBuffer[5]-'0')*10+(NetTimeBuffer[6]-'0');
-	netTime.date=(NetTimeBuffer[7]-'0')*10+(NetTimeBuffer[8]-'0');
-	
 	OLED_ShowChar(1,2,'0'+netTime.hour/10,16);
 	OLED_ShowChar(9,2,'0'+netTime.hour%10,16);
 	OLED_ShowChar(17,2,':',16);
@@ -149,10 +150,6 @@ void OLEDShowNetTime()
 }
 void OLEDShowNetDate()
 {	
-	netTime.year=(NetTimeBuffer[3]-'0')*10+(NetTimeBuffer[4]-'0');
-	netTime.mon=(NetTimeBuffer[5]-'0')*10+(NetTimeBuffer[6]-'0');
-	netTime.date=(NetTimeBuffer[7]-'0')*10+(NetTimeBuffer[8]-'0');
-	
 	OLED_ShowChar(1,2,'0'+netTime.year/10,16);
 	OLED_ShowChar(9,2,'0'+netTime.year%10,16);
 	OLED_ShowChar(17,2,':',16);
