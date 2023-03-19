@@ -10,6 +10,8 @@
 sbit recieveLED=P0^7;
 sbit writeLED=P0^6;
 sbit key=P3^2;
+sbit IT2= XICON^0;
+sbit EX2= XICON^2;
 
 float T;
 struct  TIME time;				//DS1302时间结构体
@@ -19,6 +21,7 @@ uchar NetTimeBuffer[15];		//接收数据包缓存
 uchar valid;					//数据有效无效标志
 char light;
 uchar flag;						//收发标志
+uchar recieceFlag;				//是否显示开启提醒标志位
 
 struct systime					//定义网络时间结构体
 {
@@ -44,7 +47,7 @@ void main()
 {
 	uint localTime;
 	uint webTime;
-
+	
 	recieveLED=1;
 	DS18B20_ConvertT();
 	UART_Init();
@@ -54,6 +57,9 @@ void main()
 
 	IT1=1;
 	EX1=1;
+	
+	IT2=1;
+	EX2=1;
 	
 	OLED_Init();
 	OLED_Clear();
@@ -205,7 +211,8 @@ void UART_IT() interrupt 4
 		{
 			state=1;					//接收到包头'@',进状态1,记录14个时间数和0D
 			len=15;
-			recieveLED=0;
+			if(recieceFlag)
+				recieveLED=0;
 		}
 		if(state==1&&len>0)
 		{
@@ -217,7 +224,8 @@ void UART_IT() interrupt 4
 		{
 			state=2;					//接受到包尾，状态2
 			len=0;
-			recieveLED=1;
+			if(recieceFlag)
+				recieveLED=1;
 		}
 	}
 	flag++;
@@ -225,7 +233,7 @@ void UART_IT() interrupt 4
 	RI=0;
 }
 
-void lightSet() interrupt 0
+void lightSet() interrupt 0		//按键增加亮度 
 {
 	//delay(20);
 	//if(key==0)
@@ -237,7 +245,7 @@ void lightSet() interrupt 0
 	}
 }
 
-void lightSet2() interrupt 2
+void lightSet2() interrupt 2	//按键减少亮度
 {
 	//delay(20);
 	//if(key==0)
@@ -247,4 +255,9 @@ void lightSet2() interrupt 2
 			light=8;
 		TM1638_SetLight(light);
 	}
+}
+
+void recieveSet() interrupt 6	//按键更改接收提醒
+{
+	recieceFlag=!recieceFlag;
 }
