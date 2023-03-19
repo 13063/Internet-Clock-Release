@@ -17,7 +17,7 @@ uchar state;					//接受数据包状态机
 uchar len;						//接收数据包长度
 uchar NetTimeBuffer[15];		//接收数据包缓存
 uchar valid;					//数据有效无效标志
-uchar light;
+char light;
 uchar flag;						//收发标志
 
 struct systime					//定义网络时间结构体
@@ -39,13 +39,22 @@ void OLEDShowRTCTime();			//OLED显示RTC时间
 void OLEDShowRTCDate();			//OLED显示RTC日期
 
 
+
 void main()
 {
+	uint localTime;
+	uint webTime;
+
 	recieveLED=1;
 	DS18B20_ConvertT();
 	UART_Init();
+	
 	IT0=1;
 	EX0=1;
+
+	IT1=1;
+	EX1=1;
+	
 	OLED_Init();
 	OLED_Clear();
 	TM1638_Init();
@@ -74,8 +83,12 @@ void main()
 			valid=1;
 		}
 
+		
+		localTime=60*time.min+time.sec;
+		webTime=netTime.min*60+netTime.sec;
+		
 		//ds1302时间与网络时间相差10秒则写入，避免频繁写入
-		if((valid==1)  && (time.sec<=netTime.sec-8 || time.sec>=(netTime.sec+12)) && (temp!=flag))
+		if((valid==1)  && (localTime<=webTime-8 || localTime>=webTime+12) && (temp!=flag))
 		{
 			writeLED=~writeLED;
 			DS1302_WriteTimeSim(netTime.hour,netTime.min,netTime.sec+2);
@@ -173,12 +186,12 @@ void OLEDShowTemp()
 	T=DS18B20_ReadT();	//读取温度
 	if(T<0)				//如果温度小于0
 	{
-		OLED_ShowChar(0,6,'-');	//显示负号
+		OLED_ShowChar(0,6,'-',16);	//显示负号
 		T=-T;			//将温度变为正数
 	}
 	else				//如果温度大于等于0
 	{
-		OLED_ShowChar(0,6,'+');	//显示正号
+		OLED_ShowChar(0,6,'+',16);	//显示正号
 	}
 }
 
@@ -212,15 +225,26 @@ void UART_IT() interrupt 4
 	RI=0;
 }
 
-void exint0() interrupt 0
+void lightSet() interrupt 0
 {
-	delay(20);
-	if(key==0)
+	//delay(20);
+	//if(key==0)
 	{
 		light++;
 		if(light>8)
 			light=0;
 		TM1638_SetLight(light);
 	}
-	
+}
+
+void lightSet2() interrupt 2
+{
+	//delay(20);
+	//if(key==0)
+	{
+		light--;
+		if(light<0)
+			light=8;
+		TM1638_SetLight(light);
+	}
 }
