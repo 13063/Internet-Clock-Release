@@ -75,43 +75,6 @@ void OLED_ShowChar(uchar x,uchar y,uchar chr,uchar Char_Size)
 }
 
 
-
-
-void SSD1306_init()
-{	
-  delay(100);
-  SSD1306_WriteByte(0xAE,OLED_CMD); //display off
-  SSD1306_WriteByte(0x20,OLED_CMD); //Set Memory Addressing Mode   
-  SSD1306_WriteByte(0x10,OLED_CMD); //00,Horizontal Addressing Mode;01,Vertical Addressing Mode;10,Page Addressing Mode (RESET);11,Invalid
-  SSD1306_WriteByte(0xB0,OLED_CMD); //Set Page Start Address for Page Addressing Mode,0-7
-  SSD1306_WriteByte(0xC1,OLED_CMD); //Set COM Output Scan Direction
-  SSD1306_WriteByte(0x00,OLED_CMD); //---set low column address
-  SSD1306_WriteByte(0x10,OLED_CMD); //---set high column address
-  SSD1306_WriteByte(0x40,OLED_CMD); //--set start line address
-  SSD1306_WriteByte(0x81,OLED_CMD); //--set contrast control register
-  SSD1306_WriteByte(0xFF,OLED_CMD);
-  SSD1306_WriteByte(0xA1,OLED_CMD); //--set segment re-map 0 to 127 0xa0,if upside down
-  SSD1306_WriteByte(0xC8,OLED_CMD); //--set segment re-map 0 to 127 0xc0,if upside down
-  SSD1306_WriteByte(0xA6,OLED_CMD); //--set normal display
-  SSD1306_WriteByte(0xA8,OLED_CMD); //--set multiplex ratio(1 to 64)
-  SSD1306_WriteByte(0x3F,OLED_CMD); //
-  SSD1306_WriteByte(0xA4,OLED_CMD); //0xa4,Output follows RAM content;0xa5,Output ignores RAM content
-  SSD1306_WriteByte(0xD3,OLED_CMD); //-set display offset
-  SSD1306_WriteByte(0x00,OLED_CMD); //-not offset
-  SSD1306_WriteByte(0xD5,OLED_CMD); //--set display clock divide ratio/oscillator frequency
-  SSD1306_WriteByte(0xF0,OLED_CMD); //--set divide ratio
-  SSD1306_WriteByte(0xD9,OLED_CMD); //--set pre-charge period
-  SSD1306_WriteByte(0x22,OLED_CMD); //
-  SSD1306_WriteByte(0xDA,OLED_CMD); //--set com pins hardware configuration
-  SSD1306_WriteByte(0x12,OLED_CMD);
-  SSD1306_WriteByte(0xDB,OLED_CMD); //--set vcomh
-  SSD1306_WriteByte(0x20,OLED_CMD); //0x20,0.77xVcc
-  SSD1306_WriteByte(0x8D,OLED_CMD); //--set DC-DC enable
-  SSD1306_WriteByte(0x14,OLED_CMD); //
-  SSD1306_WriteByte(0xAF,OLED_CMD); //--turn on SSD1306 panel
-}
-
-
 void SSD1306_ON(void) {
 	SSD1306_WriteByte(0x8D,OLED_CMD);  
 	SSD1306_WriteByte(0x14,OLED_CMD);  
@@ -204,12 +167,6 @@ void OLED_DrawBMP(unsigned char x0, unsigned char y0,unsigned char x1, unsigned 
 	    }
 	}
 } 
-
-
-
-
-
-
 
 
 void OLED_Init(void)

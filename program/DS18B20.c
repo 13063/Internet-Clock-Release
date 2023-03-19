@@ -1,4 +1,4 @@
-#include <REGX52.H>
+#include <STC89C5xRC.H>
 #include "OneWire.h"
 
 //DS18B20指令
