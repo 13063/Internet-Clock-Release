@@ -109,13 +109,3 @@ void DS1302_WriteDate(uchar year,uchar mon,uchar date)
 	DS1302_Write(DS1302_DATE,date/10*16+date%10);
 	DS1302_Write(DS1302_WP,0x80);
 }
-
-void DS1302_Exchange()
-{
-
-}
-void DS1302_Init()
-{
-}
-
-

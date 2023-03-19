@@ -27,6 +27,4 @@ uchar DS1302_Read(uchar cmd);
 struct TIME DS1302_GetTime();
 void DS1302_WriteTimeSim(uchar hour,uchar min,uchar sec);
 void DS1302_WriteDate(uchar year,uchar mon,uchar date);
-
-
 #endif
